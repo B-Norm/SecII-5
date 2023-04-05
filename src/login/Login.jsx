@@ -1,18 +1,16 @@
 import { Button, Form, Input, Space } from "antd";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSignIn } from "react-auth-kit";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 const API_KEY = import.meta.env.VITE_API_KEY;
 
 //layout from antd
 const Login = (props) => {
+  //console.log(props);
   const signIn = useSignIn();
-
-  const showRegister = () => {
-    props.setModalTitle("Register");
-    props.setRegisterOpen(true);
-  };
+  const nav = useNavigate();
 
   // log user in
   const onFinish = async (values) => {
@@ -40,7 +38,7 @@ const Login = (props) => {
             tokenType: "Bearer",
             authState: { username: values.username },
           });
-          props.setLoginOpen(false);
+          nav("/");
         }
       })
       .catch((err) => {
@@ -48,11 +46,23 @@ const Login = (props) => {
       });
   };
 
+  useEffect(() => {
+    props.setPageName("Login");
+  }, []);
   return (
     <>
       <Form
         name="normal_login"
         className="login-form"
+        labelCol={{
+          span: 8,
+        }}
+        wrapperCol={{
+          span: 16,
+        }}
+        style={{
+          maxWidth: 600,
+        }}
         initialValues={{
           remember: false,
         }}
@@ -90,13 +100,6 @@ const Login = (props) => {
             placeholder="Password"
           />
         </Form.Item>
-        <Form.Item>
-          <Form.Item
-            name="remember"
-            valuePropName="checked"
-            noStyle
-          ></Form.Item>
-        </Form.Item>
 
         <Form.Item>
           <Space wrap>
@@ -107,7 +110,7 @@ const Login = (props) => {
             >
               Log in
             </Button>
-            <Button type="default" onClick={showRegister}>
+            <Button type="default" onClick={() => nav("/register")}>
               {" "}
               Register
             </Button>

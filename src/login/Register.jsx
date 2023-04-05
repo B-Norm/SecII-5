@@ -1,11 +1,14 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Form, Input, Button, Space } from "antd";
 import axios from "axios";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
+import { useNavigate } from "react-router-dom";
 const API_KEY = import.meta.env.VITE_API_KEY;
 
 // layout from antd
 const Register = (props) => {
+  const nav = useNavigate();
+
   // register user
   const registerUser = async (values) => {
     const url = "/api/register";
@@ -36,9 +39,13 @@ const Register = (props) => {
   };
 
   const backToLogin = () => {
-    props.setModalTitle("Login");
-    props.setRegisterOpen(false);
+    nav("/login");
   };
+
+  // change name
+  useEffect(() => {
+    props.setPageName("Register");
+  });
 
   return (
     <>
