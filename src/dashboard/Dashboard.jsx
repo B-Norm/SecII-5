@@ -7,6 +7,10 @@ import axios from "axios";
 const { Header, Content, Footer } = Layout;
 const API_KEY = import.meta.env.VITE_API_KEY;
 
+// TODO: add files file options to enrypt with AES and Asymmetric
+// Maybe let users send files to other's by their public/private keys
+// Also reset passwords
+
 const App = (props) => {
   // states for login button
   const isAuthenticated = useIsAuthenticated();
