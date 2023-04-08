@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Form, Input, Button, Space } from "antd";
+import { Form, Input, Button, Space, message } from "antd";
 import axios from "axios";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
@@ -7,6 +7,16 @@ const API_KEY = import.meta.env.VITE_API_KEY;
 
 // layout from antd
 const Register = (props) => {
+  // User added
+  const success = () => {
+    message.success("User Added");
+  };
+
+  // username taken
+  const error = () => {
+    message.error("Username taken!!");
+  };
+
   const nav = useNavigate();
 
   // register user
@@ -30,11 +40,12 @@ const Register = (props) => {
     const res = await axios(options)
       .then((response) => {
         if (response.status === 200) {
-          props.setLoginOpen(false);
+          success();
+          backToLogin();
         }
       })
       .catch((err) => {
-        alert("Username Taken!");
+        error();
       });
   };
 
