@@ -36,7 +36,10 @@ const Login = (props) => {
             token: response.data.token,
             expiresIn: 60,
             tokenType: "Bearer",
-            authState: { username: values.username },
+            authState: {
+              username: values.username,
+              key: response.data.key,
+            },
           });
           nav("/");
         }
@@ -49,6 +52,7 @@ const Login = (props) => {
   useEffect(() => {
     props.setPageName("Login");
   }, []);
+
   return (
     <>
       <Form

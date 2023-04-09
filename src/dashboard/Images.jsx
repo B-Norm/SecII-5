@@ -49,7 +49,6 @@ const Images = (props) => {
   };
   const handleCancelDisplay = () => {
     setSelectedCard(null);
-    console.log(selectedCard);
   };
   const columnCount = {
     xs: 1,
@@ -58,7 +57,7 @@ const Images = (props) => {
     lg: 4,
     xl: 5,
   };
-
+  // TODO: Add file download
   return (
     <>
       {" "}
@@ -87,6 +86,7 @@ const Images = (props) => {
             open={selectedCard}
             destroyOnClose={true}
             onCancel={handleCancelDisplay}
+            afterClose={props.getFiles}
             footer={[]}
           >
             <Crypto

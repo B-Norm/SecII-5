@@ -36,6 +36,7 @@ const App = (props) => {
   const signOut = useSignOut();
   const [file, setFile] = useState([]);
   const [files, setFiles] = useState([]);
+  const [submited, setSubmited] = useState(false);
 
   // Upload files
   const uploadFiles = async () => {
@@ -43,9 +44,11 @@ const App = (props) => {
       nav("/login");
     }
     const url = "/api/upload";
-
     //const base64 = await convertBase64(file);
-
+    if (!submited) {
+      message.error("No File Selected.");
+      return;
+    }
     const formData = new FormData();
     formData.append("filename", file.name);
     //formData.append("file", base64);
@@ -67,6 +70,7 @@ const App = (props) => {
           message.success("File Uploaded");
           setFile([]);
           getFiles();
+          setSubmited(false);
           document.getElementById("form").reset();
         }
       })
@@ -143,12 +147,14 @@ const App = (props) => {
       >
         <Button icon={<UploadOutlined />}>Click to Upload</Button>
       </Upload> */}
-      <form id="form">
+      <form id="form" noValidate>
         <input
           type="file"
           name="File"
+          required
           onChange={(e) => {
             setFile(e.target.files[0]);
+            setSubmited(true);
           }}
         />
         <Button onClick={uploadFiles}> Upload</Button>
