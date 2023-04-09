@@ -5,6 +5,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import RSADecrypt from "../Security/RSADecrypt";
 import RSAEncrypt from "../Security/RSAEncrypt";
+import CheckHash from "../Security/CheckHash";
 
 const Crypto = (props) => {
   const [value, setValue] = useState(1);
@@ -16,13 +17,8 @@ const Crypto = (props) => {
   const encryptStyles = ["AES", "3DES", "RSA", "HASH"];
 
   const onChange = (e) => {
-    console.log("radio checked", e.target.value);
     setValue(e.target.value);
   };
-
-  // Key retreival
-
-  // Style guide: 1=AES, 2=DES, 3=RSA, 4=HASH
 
   //useEffect(() => {}, []);
 
@@ -32,7 +28,9 @@ const Crypto = (props) => {
         <Radio value={1}>AES</Radio>
         <Radio value={2}>3DES</Radio>
         <Radio value={3} /* onChange={() => getPublicKeys()} */>RSA</Radio>
-        <Radio value={4}>Check Hash</Radio>
+        <Radio disabled={props.file.encrypted} value={4}>
+          Check Hash
+        </Radio>
       </Radio.Group>
       {value === 1 && (
         <>
@@ -56,21 +54,20 @@ const Crypto = (props) => {
         </>
       )}
       {value === 3 &&
-        (!props.file.encrypted ? (
-          <RSAEncrypt
+        (props.file.encrypted ? (
+          <RSADecrypt
             file={props.file}
             setSelectedCard={props.setSelectedCard}
           />
         ) : (
-          <RSADecrypt
+          <RSAEncrypt
             file={props.file}
             setSelectedCard={props.setSelectedCard}
           />
         ))}
       {value === 4 && (
         <>
-          <p>Test Hash</p>
-          <Button>Submit</Button>
+          <CheckHash file={props.file} />
         </>
       )}
     </>

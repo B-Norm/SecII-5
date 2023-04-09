@@ -6,7 +6,7 @@ import { useIsAuthenticated, useAuthHeader, useSignOut } from "react-auth-kit";
 import Images from "./Images";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-
+import GenerateKeys from "../Security/GenerateKeys";
 const API_KEY = import.meta.env.VITE_API_KEY;
 
 // TODO: add files file options to enrypt with AES and Asymmetric
@@ -138,15 +138,6 @@ const App = (props) => {
 
   return (
     <div>
-      {/* <Upload
-        beforeUpload={(file) => {
-          console.log(file);
-          return false;
-        }}
-        onChange={(info) => setFile(info.file)}
-      >
-        <Button icon={<UploadOutlined />}>Click to Upload</Button>
-      </Upload> */}
       <form id="form" noValidate>
         <input
           type="file"
@@ -160,6 +151,7 @@ const App = (props) => {
         <Button onClick={uploadFiles}> Upload</Button>
       </form>
       <button onClick={deleteAll}> Delete all</button>
+      <GenerateKeys />
       <Images files={files} getFiles={getFiles} />
     </div>
   );

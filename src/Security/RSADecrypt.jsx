@@ -10,6 +10,7 @@ const { Dragger } = Upload;
 
 const RSADecrypt = (props) => {
   const [pemString, setPemString] = useState("");
+  const [fileUploaded, setFileUploaded] = useState(false);
   const nav = useNavigate();
   const isAuthenticated = useIsAuthenticated();
   const useAuth = useAuthHeader();
@@ -20,6 +21,7 @@ const RSADecrypt = (props) => {
     fileReader.onload = async (e) => {
       const privateKey = forge.pki.privateKeyFromPem(e.target.result);
       setPemString(forge.pki.privateKeyToPem(privateKey));
+      setFileUploaded(true);
     };
     fileReader.readAsText(file);
   };
@@ -41,7 +43,8 @@ const RSADecrypt = (props) => {
   };
 
   const decryptFile = async () => {
-    console.log(pemString);
+    setFileUploaded(false);
+
     if (!isAuthenticated()) {
       nav("/login");
     }
@@ -51,14 +54,19 @@ const RSADecrypt = (props) => {
     const buffer = btoa(
       String.fromCharCode(...new Uint8Array(props.file.file.data.data))
     );
-
+    console.log(buffer);
     const encryptedBuffer = forge.util.decode64(buffer);
+    console.log(encryptedBuffer);
     // Parse the public key string into a Forge public key object
     const privateKeyObject = forge.pki.privateKeyFromPem(pemString);
 
     // Encrypt the input buffer using the public key
-    const DecryptedBuffer = privateKeyObject.decrypt(encryptedBuffer);
-
+    let decryptedBuffer;
+    try {
+      decryptedBuffer = privateKeyObject.decrypt(encryptedBuffer);
+    } catch {
+      message.error("Wrong Key");
+    }
     const options = {
       method: "POST",
       headers: {
@@ -66,7 +74,7 @@ const RSADecrypt = (props) => {
         authorization: useAuth(),
       },
       data: {
-        file: DecryptedBuffer,
+        file: decryptedBuffer,
         fileID: props.file._id,
       },
       url: url,
@@ -75,12 +83,12 @@ const RSADecrypt = (props) => {
     const res = await axios(options)
       .then((response) => {
         if (response.status === 200) {
-          message.success("File Encrypted by with RSA");
+          message.success("File Decrypted by with RSA");
           props.setSelectedCard(null);
         }
       })
       .catch((err) => {
-        message.error("Failed to Encrypt");
+        message.error("Wrong Key");
         console.log(err);
       });
   };
@@ -95,7 +103,7 @@ const RSADecrypt = (props) => {
           Click or drag file to this area to upload
         </p>
         <p className="ant-upload-hint">Please upload a PEM file.</p>
-        {pemString && <h1 className="ant-upload-hint">File added</h1>}
+        {fileUploaded && <h1 className="ant-upload-hint">File added</h1>}
       </Dragger>
       <Button onClick={decryptFile}> Submit </Button>
     </div>

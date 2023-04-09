@@ -3,6 +3,8 @@ import { Button, Cascader, message } from "antd";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useAuthHeader, useAuthUser, useIsAuthenticated } from "react-auth-kit";
+//import NodeRSA from "node-rsa";
+
 import forge from "node-forge";
 
 const RSAEncrypt = (props) => {
@@ -25,7 +27,7 @@ const RSAEncrypt = (props) => {
     }
   };
 
-  const getPublicKeys = async () => {
+  const getSymKeys = async () => {
     if (!isAuthenticated()) {
       nav("/login");
     }
@@ -68,7 +70,7 @@ const RSAEncrypt = (props) => {
     // Encrypt the input buffer using the public key
     const encryptedBuffer = publicKeyObject.encrypt(buffer);
     const encodedEncrypt = forge.util.encode64(encryptedBuffer);
-    console.log(encodedEncrypt);
+
     const options = {
       method: "POST",
       headers: {
@@ -95,9 +97,8 @@ const RSAEncrypt = (props) => {
       });
   };
 
-  useEffect(() => {
-    getPublicKeys();
-  }, []);
+  useEffect(() => {}, []);
+
   return (
     <>
       <p>Choose User's Public Key</p>
