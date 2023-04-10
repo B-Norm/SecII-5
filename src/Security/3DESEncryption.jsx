@@ -5,17 +5,17 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useAuthHeader, useAuthUser, useIsAuthenticated } from "react-auth-kit";
 import forge from "node-forge";
+const { Dragger } = Upload;
 const SERVER_AES_KEY = import.meta.env.VITE_SERVER_AES_KEY;
 
-const AESEncryption = (props) => {
+const DESEncryption = (props) => {
   const [keys, setKeys] = useState([]);
   const [symKey, setSymKey] = useState(null);
   const nav = useNavigate();
   const isAuthenticated = useIsAuthenticated();
   const useAuth = useAuthHeader();
   const auth = useAuthUser();
-  const AES = 1;
-  // functions to handle reading of PEM file
+  const DES = 2;
 
   const updateSymKey = (value) => {
     for (let i = 0; i < keys.length; i++) {
@@ -41,7 +41,7 @@ const AESEncryption = (props) => {
         authorization: useAuth(),
       },
       data: {
-        style: AES,
+        style: DES,
         username: auth().username,
       },
       url: url,
@@ -78,24 +78,28 @@ const AESEncryption = (props) => {
     if (!isAuthenticated()) {
       nav("/login");
     }
-    let url = "/api/AES/encrypt";
+    let url = "/api/3DES/encrypt";
 
-    // Encrypt data with AES and send it with the IV at the front
+    // Encrypt data with 3DES and send it with the IV at the front
     const byteBuffer = forge.util.createBuffer();
     props.file.file.data.data.forEach((byte) => {
       byteBuffer.putByte(byte);
     });
 
-    const iv = forge.random.getBytesSync(16);
-    const aesKeyBytes = forge.util.decode64(symKey);
-
-    const cipher = forge.cipher.createCipher("AES-CBC", aesKeyBytes);
+    const iv = forge.random.getBytesSync(8);
+    console.log(symKey);
+    const DESKeyBytes = forge.util.decode64(symKey);
+    console.log("DES BYTES:", DESKeyBytes.length);
+    const cipher = forge.cipher.createCipher("3DES-CBC", DESKeyBytes);
     cipher.start({ iv: iv });
     cipher.update(byteBuffer);
     cipher.finish();
 
     const encryptedData = forge.util.encode64(cipher.output.getBytes());
     const encodedIV = forge.util.encode64(iv);
+
+    console.log(encodedIV);
+    console.log(encryptedData);
 
     const options = {
       method: "POST",
@@ -114,7 +118,7 @@ const AESEncryption = (props) => {
     const res = await axios(options)
       .then((response) => {
         if (response.status === 200) {
-          message.success("File Encrypted by with AES");
+          message.success("File Encrypted by with 3DES");
           props.setSelectedCard(null);
         }
       })
@@ -128,16 +132,16 @@ const AESEncryption = (props) => {
     if (!isAuthenticated()) {
       nav("/login");
     }
-    let url = "/api/AES/decrypt";
+    let url = "/api/3DES/decrypt";
 
     const byteBuffer = forge.util.createBuffer();
     props.file.file.data.data.forEach((byte) => {
       byteBuffer.putByte(byte);
     });
     const iv = forge.util.decode64(props.file.iv);
-    const aesKeyBytes = forge.util.decode64(symKey);
+    const DESKeyBytes = forge.util.decode64(symKey);
 
-    const decipher = forge.cipher.createDecipher("AES-CBC", aesKeyBytes);
+    const decipher = forge.cipher.createDecipher("3DES-CBC", DESKeyBytes);
     decipher.start({ iv });
     decipher.update(forge.util.createBuffer(byteBuffer));
     decipher.finish();
@@ -162,7 +166,7 @@ const AESEncryption = (props) => {
       const res = await axios(options)
         .then((response) => {
           if (response.status === 200) {
-            message.success("File Decrypted with AES");
+            message.success("File Decrypted with 3DES");
             props.setSelectedCard(null);
           }
         })
@@ -192,7 +196,7 @@ const AESEncryption = (props) => {
 
   return (
     <>
-      <p>Choose AES Key</p>
+      <p>Choose DES Key</p>
       <Cascader
         fieldNames={{
           label: "keyName",
@@ -201,6 +205,7 @@ const AESEncryption = (props) => {
         options={keys}
         onChange={updateSymKey}
       />
+
       <Button
         onClick={() => {
           if (props.file.encrypted) {
@@ -219,4 +224,4 @@ const AESEncryption = (props) => {
   );
 };
 
-export default AESEncryption;
+export default DESEncryption;

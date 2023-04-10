@@ -7,6 +7,7 @@ import RSADecrypt from "../Security/RSADecrypt";
 import RSAEncrypt from "../Security/RSAEncrypt";
 import CheckHash from "../Security/CheckHash";
 import AESEncryption from "../Security/AESEncryption";
+import DESEncryption from "../Security/3DESEncryption";
 
 const Crypto = (props) => {
   const [value, setValue] = useState(1);
@@ -40,10 +41,10 @@ const Crypto = (props) => {
         />
       )}
       {value === 2 && (
-        <>
-          <p>Choose Key</p>
-          <Button>Submit</Button>
-        </>
+        <DESEncryption
+          file={props.file}
+          setSelectedCard={props.setSelectedCard}
+        />
       )}
       {value === 3 &&
         (props.file.encrypted ? (

@@ -34,7 +34,7 @@ const GenerateKeys = (props) => {
       keyBase64 = forge.util.encode64(key);
     } else {
       // 3DES KEY
-      key = forge.random.getBytesSync(16);
+      key = forge.random.getBytesSync(24);
       keyBase64 = forge.util.encode64(key);
     }
 

@@ -37,6 +37,7 @@ const App = (props) => {
   const [file, setFile] = useState([]);
   const [files, setFiles] = useState([]);
   const [submited, setSubmited] = useState(false);
+  const [update, setUpdate] = useState(false);
 
   // Upload files
   const uploadFiles = async () => {
@@ -81,6 +82,7 @@ const App = (props) => {
 
   // Show files for encypting and checking hashes
   const getFiles = async () => {
+    console.log("Being called");
     if (!isAuthenticated()) {
       nav("/login");
     }
