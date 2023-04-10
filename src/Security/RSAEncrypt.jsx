@@ -19,7 +19,6 @@ const RSAEncrypt = (props) => {
     for (let i = 0; i < keys.length; i++) {
       if (keys[i].username == value) {
         setPubRSAKey(keys[i].publicKey);
-        console.log(keys[i].publicKey);
         break;
       }
     }

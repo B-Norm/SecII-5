@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import RSADecrypt from "../Security/RSADecrypt";
 import RSAEncrypt from "../Security/RSAEncrypt";
 import CheckHash from "../Security/CheckHash";
+import AESEncryption from "../Security/AESEncryption";
 
 const Crypto = (props) => {
   const [value, setValue] = useState(1);
@@ -33,19 +34,10 @@ const Crypto = (props) => {
         </Radio>
       </Radio.Group>
       {value === 1 && (
-        <>
-          <p>Choose Key</p>
-          {/* <Cascader
-            fieldNames={{
-              label: "username",
-              value: "username",
-            }}
-            options={keys}
-            onChange={() => {}}
-          />
-
-          <Button onClick={() => encryptFile(value)}>Submit</Button> */}
-        </>
+        <AESEncryption
+          file={props.file}
+          setSelectedCard={props.setSelectedCard}
+        />
       )}
       {value === 2 && (
         <>

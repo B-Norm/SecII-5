@@ -48,6 +48,7 @@ const Images = (props) => {
     setSelectedCard(file);
   };
   const handleCancelDisplay = () => {
+    props.getFiles();
     setSelectedCard(null);
   };
   const columnCount = {

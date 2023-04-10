@@ -42,7 +42,7 @@ const RSADecrypt = (props) => {
     },
   };
 
-  const decryptFile = async () => {
+  const decryptFile = async (value) => {
     setFileUploaded(false);
 
     if (!isAuthenticated()) {
@@ -67,30 +67,44 @@ const RSADecrypt = (props) => {
     } catch {
       message.error("Wrong Key");
     }
-    const options = {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-        authorization: useAuth(),
-      },
-      data: {
-        file: decryptedBuffer,
-        fileID: props.file._id,
-      },
-      url: url,
-    };
+    if (value === 1) {
+      const options = {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          authorization: useAuth(),
+        },
+        data: {
+          file: decryptedBuffer,
+          fileID: props.file._id,
+        },
+        url: url,
+      };
 
-    const res = await axios(options)
-      .then((response) => {
-        if (response.status === 200) {
-          message.success("File Decrypted by with RSA");
-          props.setSelectedCard(null);
-        }
-      })
-      .catch((err) => {
-        message.error("Wrong Key");
-        console.log(err);
-      });
+      const res = await axios(options)
+        .then((response) => {
+          if (response.status === 200) {
+            message.success("File Decrypted by with RSA");
+            props.setSelectedCard(null);
+          }
+        })
+        .catch((err) => {
+          message.error("Wrong Key");
+          console.log(err);
+        });
+    } else {
+      // Download Decrypted file
+      const url =
+        "data:" + props.file.file.contentType + ";base64," + decryptedBuffer;
+
+      event.preventDefault();
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = props.file.filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
   };
 
   return (
@@ -105,7 +119,20 @@ const RSADecrypt = (props) => {
         <p className="ant-upload-hint">Please upload a PEM file.</p>
         {fileUploaded && <h1 className="ant-upload-hint">File added</h1>}
       </Dragger>
-      <Button onClick={decryptFile}> Submit </Button>
+      {fileUploaded && (
+        <>
+          <Button
+            onClick={() => {
+              decryptFile(1);
+            }}
+          >
+            Submit
+          </Button>
+          <Button onClick={() => decryptFile(2)}>
+            Download Decrypted File
+          </Button>
+        </>
+      )}
     </div>
   );
 };
