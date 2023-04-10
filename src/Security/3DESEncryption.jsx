@@ -5,12 +5,21 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useAuthHeader, useAuthUser, useIsAuthenticated } from "react-auth-kit";
 import forge from "node-forge";
-const { Dragger } = Upload;
-const SERVER_AES_KEY = import.meta.env.VITE_SERVER_AES_KEY;
+import PEMUpload from "./PEMUpload";
+import {
+  asymEncrypt,
+  asymDecrypt,
+  aesEncrypt,
+  aesDecrypt,
+  aesDecryptFromRand,
+  desEncrypt,
+  desDecrypt,
+} from "./SecHelper";
 
 const DESEncryption = (props) => {
   const [keys, setKeys] = useState([]);
   const [symKey, setSymKey] = useState(null);
+  const [pemString, setPemString] = useState("");
   const nav = useNavigate();
   const isAuthenticated = useIsAuthenticated();
   const useAuth = useAuthHeader();
@@ -51,21 +60,19 @@ const DESEncryption = (props) => {
       .then((response) => {
         if (response.status === 200) {
           // decrypt with server key and load keys
-          const iv = forge.util.decode64(
-            response.data.encryptedData.slice(0, 24)
-          );
-          const encrypted = forge.util.decode64(
-            response.data.encryptedData.slice(24)
+
+          const aesKey = asymDecrypt(
+            response.data.encryptedKey,
+            pemString,
+            "buffer"
           );
 
-          const aesKeyBytes = forge.util.decode64(SERVER_AES_KEY);
-          const decipher = forge.cipher.createDecipher("AES-CBC", aesKeyBytes);
-          decipher.start({ iv });
-          decipher.update(forge.util.createBuffer(encrypted));
-          decipher.finish();
+          let decryptedData = aesDecryptFromRand(
+            response.data.encryptedData,
+            aesKey
+          );
 
-          const decryptedData = JSON.parse(decipher.output.toString());
-          setKeys(decryptedData);
+          setKeys(JSON.parse(decryptedData.toString()));
         }
       })
       .catch((err) => {
@@ -85,7 +92,7 @@ const DESEncryption = (props) => {
     props.file.file.data.data.forEach((byte) => {
       byteBuffer.putByte(byte);
     });
-
+    /* 
     const iv = forge.random.getBytesSync(8);
     console.log(symKey);
     const DESKeyBytes = forge.util.decode64(symKey);
@@ -94,12 +101,14 @@ const DESEncryption = (props) => {
     cipher.start({ iv: iv });
     cipher.update(byteBuffer);
     cipher.finish();
-
+ 
     const encryptedData = forge.util.encode64(cipher.output.getBytes());
     const encodedIV = forge.util.encode64(iv);
 
     console.log(encodedIV);
     console.log(encryptedData);
+*/
+    const data = desEncrypt(byteBuffer, symKey);
 
     const options = {
       method: "POST",
@@ -108,8 +117,8 @@ const DESEncryption = (props) => {
         authorization: useAuth(),
       },
       data: {
-        iv: encodedIV,
-        file: encryptedData,
+        iv: data.encodedIV,
+        file: data.encryptedData,
         fileID: props.file._id,
       },
       url: url,
@@ -138,7 +147,7 @@ const DESEncryption = (props) => {
     props.file.file.data.data.forEach((byte) => {
       byteBuffer.putByte(byte);
     });
-    const iv = forge.util.decode64(props.file.iv);
+    /*     const iv = forge.util.decode64(props.file.iv);
     const DESKeyBytes = forge.util.decode64(symKey);
 
     const decipher = forge.cipher.createDecipher("3DES-CBC", DESKeyBytes);
@@ -147,7 +156,8 @@ const DESEncryption = (props) => {
     decipher.finish();
 
     const decryptedData = forge.util.encode64(decipher.output.getBytes());
-
+ */
+    const decryptedData = desDecrypt(byteBuffer, props.file.iv, symKey);
     // update database with decrypted file
     if (value === 1) {
       const options = {
@@ -191,34 +201,43 @@ const DESEncryption = (props) => {
   };
 
   useEffect(() => {
-    getSymKeys();
-  }, []);
+    if (pemString != "") {
+      getSymKeys();
+    }
+  }, [pemString]);
 
   return (
     <>
-      <p>Choose DES Key</p>
-      <Cascader
-        fieldNames={{
-          label: "keyName",
-          value: "keyName",
-        }}
-        options={keys}
-        onChange={updateSymKey}
-      />
-
-      <Button
-        onClick={() => {
-          if (props.file.encrypted) {
-            decryptFile(1);
-          } else {
-            encryptFile();
-          }
-        }}
-      >
-        Submit
-      </Button>
-      {props.file.encrypted && (
-        <Button onClick={() => decryptFile(2)}>Download Decrypted File</Button>
+      {pemString != "" ? (
+        <div>
+          <p>Choose AES Key</p>
+          <Cascader
+            fieldNames={{
+              label: "keyName",
+              value: "keyName",
+            }}
+            options={keys}
+            onChange={updateSymKey}
+          />
+          <Button
+            onClick={() => {
+              if (props.file.encrypted) {
+                decryptFile(1);
+              } else {
+                encryptFile();
+              }
+            }}
+          >
+            Submit
+          </Button>
+          {props.file.encrypted && (
+            <Button onClick={() => decryptFile(2)}>
+              Download Decrypted File
+            </Button>
+          )}
+        </div>
+      ) : (
+        <PEMUpload setPemString={setPemString} />
       )}
     </>
   );

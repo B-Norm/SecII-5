@@ -27,6 +27,7 @@ const GenerateKeys = (props) => {
     const url = "/api/keys/storeSym";
 
     let key, keyBase64;
+    // AES
     if (value === 1) {
       key = forge.random.getBytesSync(32);
       console.log("key");
