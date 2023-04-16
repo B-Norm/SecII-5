@@ -27,7 +27,7 @@ const CheckHash = (props) => {
       const arrayBuffer = e.target.result;
       const uint8Array = new Uint8Array(arrayBuffer);
       const array = Array.from(uint8Array);
-      setCheckFile(array.toString());
+      setCheckFile(array);
     };
     fileReader.readAsArrayBuffer(file);
   };
@@ -66,9 +66,13 @@ const CheckHash = (props) => {
     setFileUploaded(false);
     var newHash = forge.md.sha256.create();
     newHash.update(checkFile);
-    console.log(newHash.digest().toHex());
+    const uploadedFileHash = newHash.digest().toHex();
+    if (uploadedFileHash === hash) {
+      message.success("File is Valid");
+    } else {
+      message.error("File is Invalid");
+    }
   };
-
   const draggerProps = {
     name: "file",
     showUploadList: false,
