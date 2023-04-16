@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import { Form, Input, Button, Space, message } from "antd";
+import React, { useEffect, useState } from "react";
+import { Form, Input, Button, Space, message, Spin, Skeleton } from "antd";
 import axios from "axios";
 import forge from "node-forge";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
@@ -8,9 +8,12 @@ const API_KEY = import.meta.env.VITE_API_KEY;
 
 // layout from antd
 const Register = (props) => {
+  const [loading, setLoading] = useState(false);
+  const nav = useNavigate();
+
   // User added create keys
   const success = async (values) => {
-    message.success("User Added");
+    //setLoading(setLoading(true));
     const keys = forge.pki.rsa.generateKeyPair(2048);
 
     const privateKey = forge.pki.privateKeyToPem(keys.privateKey);
@@ -34,6 +37,8 @@ const Register = (props) => {
       .then((res) => {
         if (res.status === 200) {
           console.log("Keys Created");
+          setLoading(false);
+          message.success("User Added");
         }
       })
       .catch((err) => {
@@ -45,7 +50,6 @@ const Register = (props) => {
   const error = () => {
     message.error("Username taken!!");
   };
-  const nav = useNavigate();
 
   // register user
   const registerUser = async (values) => {
@@ -70,12 +74,12 @@ const Register = (props) => {
         .then((response) => {
           if (response.status === 200) {
             backToLogin();
+            success(values);
           }
         })
         .catch((err) => {
           error();
         });
-      success(values);
     } catch (err) {
       console.log(err);
     }
@@ -109,12 +113,16 @@ const Register = (props) => {
             },
           ]}
         >
-          <Input
-            maxLength={16}
-            prefix={<UserOutlined className="site-form-item-icon" />}
-            placeholder="Username"
-            autoComplete="off"
-          />
+          {loading ? ( // conditionally render Skeleton component when form is submitted
+            <Skeleton.Input active />
+          ) : (
+            <Input
+              maxLength={16}
+              prefix={<UserOutlined className="site-form-item-icon" />}
+              placeholder="Username"
+              autoComplete="off"
+            />
+          )}
         </Form.Item>
 
         <Form.Item
@@ -127,11 +135,15 @@ const Register = (props) => {
           ]}
           hasFeedback
         >
-          <Input.Password
-            maxLength={16}
-            prefix={<UserOutlined className="site-form-item-icon" />}
-            placeholder="Password"
-          />
+          {loading ? ( // conditionally render Skeleton component when form is submitted
+            <Skeleton.Input active />
+          ) : (
+            <Input.Password
+              maxLength={16}
+              prefix={<UserOutlined className="site-form-item-icon" />}
+              placeholder="Password"
+            />
+          )}
         </Form.Item>
 
         <Form.Item
@@ -155,15 +167,19 @@ const Register = (props) => {
             }),
           ]}
         >
-          <Input.Password
-            maxLength={16}
-            prefix={<UserOutlined className="site-form-item-icon" />}
-            placeholder="Confirm Password"
-          />
+          {loading ? ( // conditionally render Skeleton component when form is submitted
+            <Skeleton.Input active />
+          ) : (
+            <Input.Password
+              maxLength={16}
+              prefix={<UserOutlined className="site-form-item-icon" />}
+              placeholder="Confirm Password"
+            />
+          )}
         </Form.Item>
         <Form.Item>
           <Space wrap>
-            <Button type="primary" htmlType="submit">
+            <Button type="primary" htmlType="submit" loading={loading}>
               Register
             </Button>
             <Button type="default" onClick={backToLogin}>

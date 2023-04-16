@@ -1,28 +1,32 @@
 import axios from "axios";
 import { message } from "antd";
 import forge from "node-forge";
+import { useAuthUser, useAuthHeader } from "react-auth-kit";
 
 export const asymEncrypt = (decrpyted64, pubKey, returnType) => {
-  const publicKeyObject = forge.pki.publicKeyFromPem(pubKey);
+  try {
+    const publicKeyObject = forge.pki.publicKeyFromPem(pubKey);
+    const decryptedBuffer = forge.util.decode64(decrpyted64);
 
-  const encryptedBuffer = publicKeyObject.encrypt(
-    forge.util.decode64(decrpyted64)
-  );
+    const encryptedBuffer = publicKeyObject.encrypt(decryptedBuffer);
 
-  const encodedEncrypt = forge.util.encode64(encryptedBuffer);
-  if (returnType === "buffer") {
-    return encryptedBuffer;
-  } else {
-    return encodedEncrypt;
+    const encodedEncrypt = forge.util.encode64(encryptedBuffer);
+    if (returnType === "buffer") {
+      return encryptedBuffer;
+    } else {
+      return encodedEncrypt;
+    }
+  } catch (err) {
+    console.log("Failed to encrypt key. " + err.message);
   }
 };
 
 export const asymDecrypt = (encrypt64, privKey, returnType) => {
-  let decryptedBuffer;
   try {
     const encryptedBuffer = forge.util.decode64(encrypt64);
     const privateKeyObject = forge.pki.privateKeyFromPem(privKey);
-    decryptedBuffer = privateKeyObject.decrypt(encryptedBuffer);
+    const decryptedBuffer = privateKeyObject.decrypt(encryptedBuffer);
+    console.log(decryptedBuffer);
     if (returnType === "buffer") {
       return decryptedBuffer;
     } else {

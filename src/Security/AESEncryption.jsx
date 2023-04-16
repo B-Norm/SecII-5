@@ -58,18 +58,23 @@ const AESEncryption = (props) => {
       .then((response) => {
         if (response.status === 200) {
           // decrypt with private key and then decrpyt cypher with sent key load keys
-          const aesKey = asymDecrypt(
-            response.data.encryptedKey,
-            pemString,
-            "buffer"
-          );
+          try {
+            const aesKey = asymDecrypt(
+              forge.util.encode64(response.data.encryptedKey),
+              pemString,
+              "buffer"
+            );
 
-          let decryptedData = aesDecryptFromRand(
-            response.data.encryptedData,
-            aesKey
-          );
-
-          setKeys(JSON.parse(decryptedData.toString()));
+            let decryptedData = aesDecryptFromRand(
+              response.data.encryptedData,
+              aesKey
+            );
+            setKeys(JSON.parse(decryptedData.toString()));
+          } catch (err) {
+            message.error("Failed to receive keys from Server.");
+            console.error(err);
+            setPemString("");
+          }
         }
       })
       .catch((err) => {

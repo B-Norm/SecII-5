@@ -42,7 +42,12 @@ const GenerateKeys = (props) => {
     // encrypt with server public key
     let encodedEncrypt;
     try {
-      const publicKeyObject = forge.pki.publicKeyFromPem(SERVER_PUBLIC);
+      // TODO: Figure out data for transferiung keys
+      console.log(".env: ", SERVER_PUBLIC);
+      console.log(".cookie: ", auth().SERVER_PUBLIC_KEY);
+      const publicKeyObject = forge.pki.publicKeyFromPem(
+        auth().SERVER_PUBLIC_KEY
+      );
       const encryptedBuffer = publicKeyObject.encrypt(keyBase64);
       console.log("encryBuffer");
       console.log(encryptedBuffer);

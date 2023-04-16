@@ -58,7 +58,6 @@ const Images = (props) => {
     lg: 4,
     xl: 5,
   };
-  // TODO: Add file download
   return (
     <>
       {" "}

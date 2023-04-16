@@ -38,7 +38,7 @@ const Login = (props) => {
             tokenType: "Bearer",
             authState: {
               username: values.username,
-              key: response.data.key,
+              SERVER_PUBLIC_KEY: response.data.SERVER_PUBLIC_KEY,
             },
           });
           nav("/");

@@ -15,7 +15,6 @@ const Crypto = (props) => {
   const nav = useNavigate();
   const useAuth = useAuthHeader();
   const auth = useAuthUser();
-  // TODO: Implement RSA Decrypt and other encryption
   const encryptStyles = ["AES", "3DES", "RSA", "HASH"];
 
   const onChange = (e) => {

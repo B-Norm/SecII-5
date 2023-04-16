@@ -7,11 +7,10 @@ import Images from "./Images";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import GenerateKeys from "../Security/GenerateKeys";
+import ShareKey from "../Security/ShareKey";
 const API_KEY = import.meta.env.VITE_API_KEY;
 
-// TODO: add files file options to enrypt with AES and Asymmetric
-// Maybe let users send files to other's by their public/private keys
-// Also reset passwords
+// TODO: Also reset passwords and sharing of keys
 
 // convert to binary
 const convertBase64 = (file) => {
@@ -154,6 +153,7 @@ const App = (props) => {
       </form>
       <button onClick={deleteAll}> Delete all</button>
       <GenerateKeys />
+      <ShareKey />
       <Images files={files} getFiles={getFiles} />
     </div>
   );
