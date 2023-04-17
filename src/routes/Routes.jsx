@@ -6,10 +6,12 @@ import {
   useSignOut,
   useIsAuthenticated,
 } from "react-auth-kit";
+import { SettingOutlined } from "@ant-design/icons";
 import Login from "../login/Login";
 import Dashboard from "../dashboard/Dashboard";
 import Register from "../login/Register";
-import { Layout, Form, Input, Button } from "antd";
+import { Layout, Form, Input, Button, Modal } from "antd";
+import AccountSettings from "../dashboard/AccountSettings";
 
 const { Header, Content, Footer } = Layout;
 
@@ -28,6 +30,7 @@ export const RouteComponent = () => {
             style={{ position: "absolute", display: "inline", right: "100px" }}
           >
             <h3 style={{ display: "inline" }}>{auth().username}</h3>{" "}
+            <AccountSettings />
             <a
               onClick={() => {
                 signOut();

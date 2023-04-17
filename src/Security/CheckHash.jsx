@@ -8,7 +8,6 @@ import axios from "axios";
 import { useAuthHeader, useAuthUser, useIsAuthenticated } from "react-auth-kit";
 
 const { Dragger } = Upload;
-// TODO: Fix hash compair
 const CheckHash = (props) => {
   const [hash, setHash] = useState([]);
   const [currentFileHash, setCurrentFileHash] = useState([]);
