@@ -31,14 +31,12 @@ const ShareKey = () => {
     setSymKey(null);
     setUser(null);
     setNextChoice(false);
-    setDisplay(null);
+    setDisplay(false);
   };
 
   const updateSymKey = (value) => {
-    //console.log(keys);
     for (let i = 0; i < keys.length; i++) {
       if (keys[i].keyName == value) {
-        console.log(keys[i]);
         setSymKey(keys[i]);
         setNextChoice(true);
         break;
@@ -83,7 +81,7 @@ const ShareKey = () => {
 
     await axios(options)
       .then((res) => {
-        if (res === 200) {
+        if (res.status === 200) {
           message.success("Key Shared to " + user + ".");
           handleCancelDisplay();
         }
@@ -119,7 +117,6 @@ const ShareKey = () => {
       .then((response) => {
         if (response.status === 200) {
           // decrypt with private key and then decrpyt cypher with sent key load keys
-          console.log("res data key: ", response.data.encryptedKey);
           try {
             const aesKey = asymDecrypt(
               forge.util.encode64(response.data.encryptedKey),
@@ -147,7 +144,7 @@ const ShareKey = () => {
     if (!isAuthenticated()) {
       nav("/login");
     }
-    let url = "/api/getUsers";
+    let url = "/api/users/getUsers";
 
     let options = {
       method: "GET",
@@ -161,15 +158,7 @@ const ShareKey = () => {
     const res = await axios(options)
       .then((response) => {
         if (response.status === 200) {
-          // decrypt with private key and then decrpyt cypher with sent key load keys
           setUsers(response.data);
-
-          /* let decryptedData = aesDecryptFromRand(
-            response.data.encryptedData,
-            aesKey 
-          );   
-
-          setKeys(JSON.parse(decryptedData.toString())); */
         }
       })
       .catch((err) => {

@@ -19,6 +19,7 @@ const CheckHash = (props) => {
   const auth = useAuthUser();
 
   const handleFileUpload = async (file) => {
+    setCurrentFileHash(null);
     const fileReader = new FileReader();
     fileReader.onload = async (e) => {
       // convert to a string array to compare with DB
@@ -66,12 +67,14 @@ const CheckHash = (props) => {
     var newHash = forge.md.sha256.create();
     newHash.update(checkFile);
     const uploadedFileHash = newHash.digest().toHex();
+    setCurrentFileHash(uploadedFileHash);
     if (uploadedFileHash === hash) {
       message.success("File is Valid");
     } else {
       message.error("File is Invalid");
     }
   };
+
   const draggerProps = {
     name: "file",
     showUploadList: false,
@@ -92,6 +95,7 @@ const CheckHash = (props) => {
       <h2> File Hash:</h2>
       <p>{hash}</p>
       <h2> UserFile:</h2>
+      <p>{currentFileHash}</p>
       <>
         <Dragger {...draggerProps}>
           <p className="ant-upload-drag-icon">
@@ -100,8 +104,8 @@ const CheckHash = (props) => {
           <p className="ant-upload-text">Click or drag file to check Hash</p>
           {fileUploaded && <h1 className="ant-upload-hint">File added</h1>}
         </Dragger>
+
         <Button onClick={checkHash}> Submit </Button>
-        <p>{currentFileHash}</p>
       </>
     </div>
   );

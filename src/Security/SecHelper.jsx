@@ -1,7 +1,5 @@
-import axios from "axios";
 import { message } from "antd";
 import forge from "node-forge";
-import { useAuthUser, useAuthHeader } from "react-auth-kit";
 
 export const asymEncrypt = (decrpyted64, pubKey, returnType) => {
   try {
@@ -26,7 +24,6 @@ export const asymDecrypt = (encrypt64, privKey, returnType) => {
     const encryptedBuffer = forge.util.decode64(encrypt64);
     const privateKeyObject = forge.pki.privateKeyFromPem(privKey);
     const decryptedBuffer = privateKeyObject.decrypt(encryptedBuffer);
-    console.log(decryptedBuffer);
     if (returnType === "buffer") {
       return decryptedBuffer;
     } else {

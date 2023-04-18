@@ -40,7 +40,6 @@ const RSAEncrypt = (props) => {
     const res = await axios(options)
       .then((response) => {
         if (response.status === 200) {
-          //console.log(response.data);
           setKeys(response.data);
         }
       })
@@ -67,7 +66,7 @@ const RSAEncrypt = (props) => {
     // Encrypt the input buffer using the public key
     const encryptedBuffer = publicKeyObject.encrypt(buffer);
     const encodedEncrypt = forge.util.encode64(encryptedBuffer);
-    console.log(encodedEncrypt);
+
     const options = {
       method: "POST",
       headers: {
@@ -86,6 +85,7 @@ const RSAEncrypt = (props) => {
         if (response.status === 200) {
           message.success("File Encrypted by with RSA");
           props.setSelectedCard(null);
+          props.handleCancelDisplay();
         }
       })
       .catch((err) => {

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, Cascader, message, Upload } from "antd";
+import { Button, Cascader, message, Radio, Upload } from "antd";
 import { InboxOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -115,6 +115,7 @@ const AESEncryption = (props) => {
         if (response.status === 200) {
           message.success("File Encrypted by with AES");
           props.setSelectedCard(null);
+          props.handleCancelDisplay();
         }
       })
       .catch((err) => {
@@ -155,6 +156,7 @@ const AESEncryption = (props) => {
           if (response.status === 200) {
             message.success("File Decrypted with AES");
             props.setSelectedCard(null);
+            props.handleCancelDisplay();
           }
         })
         .catch((err) => {
@@ -188,6 +190,7 @@ const AESEncryption = (props) => {
       {pemString != "" ? (
         <div>
           <p>Choose AES Key</p>
+
           <Cascader
             fieldNames={{
               label: "keyName",

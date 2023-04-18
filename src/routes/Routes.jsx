@@ -35,6 +35,7 @@ export const RouteComponent = () => {
               onClick={() => {
                 signOut();
               }}
+              style={{ padding: "5px" }}
             >
               Logout
             </a>

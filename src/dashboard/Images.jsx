@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Card, Button, Row, Col, Modal } from "antd";
+import { Card, Button, Row, Col, Modal, Space } from "antd";
 import Crypto from "./Crypto";
 
 const FileDisplay = (filename, file) => {
@@ -42,8 +42,6 @@ const Images = (props) => {
   const [display, setDisplay] = useState(false);
   const [selectedCard, setSelectedCard] = useState(null);
 
-  //console.log(props.files);
-
   const handleOpenDisplay = (file) => {
     setSelectedCard(file);
   };
@@ -58,6 +56,22 @@ const Images = (props) => {
     lg: 4,
     xl: 5,
   };
+
+  const downloadFile = (file) => {
+    const url =
+      "data:" +
+      file.file.contentType +
+      ";base64," +
+      btoa(String.fromCharCode(...new Uint8Array(file.file.data.data)));
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = file.filename;
+    link.click();
+    link.remove();
+    props.getFiles();
+    setSelectedCard(null);
+  };
+
   return (
     <>
       {" "}
@@ -70,13 +84,18 @@ const Images = (props) => {
               cover={file && FileDisplay(file.filename, file.file)}
               number={i}
             >
-              <Button
-                onClick={() => {
-                  handleOpenDisplay(file);
-                }}
-              >
-                {!file.encrypted ? "Encrypt File" : "Decrypt File"}
-              </Button>
+              <Space>
+                <Button
+                  onClick={() => {
+                    handleOpenDisplay(file);
+                  }}
+                >
+                  {!file.encrypted ? "Encrypt File" : "Decrypt File"}
+                </Button>
+                <Button onClick={() => downloadFile(file)}>
+                  Download File
+                </Button>
+              </Space>
             </Card>
           </Col>
         ))}
@@ -93,6 +112,7 @@ const Images = (props) => {
               file={selectedCard}
               getFiles={props.getFiles}
               setSelectedCard={setSelectedCard}
+              handleCancelDisplay={handleCancelDisplay}
             />
           </Modal>
         )}

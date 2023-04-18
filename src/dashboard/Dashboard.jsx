@@ -10,8 +10,6 @@ import GenerateKeys from "../Security/GenerateKeys";
 import ShareKey from "../Security/ShareKey";
 const API_KEY = import.meta.env.VITE_API_KEY;
 
-// TODO: Also reset passwords and sharing of keys
-
 // convert to binary
 const convertBase64 = (file) => {
   return new Promise((resolve, reject) => {
@@ -81,7 +79,6 @@ const App = (props) => {
 
   // Show files for encypting and checking hashes
   const getFiles = async () => {
-    console.log("Being called");
     if (!isAuthenticated()) {
       nav("/login");
     }
@@ -99,7 +96,6 @@ const App = (props) => {
     const res = await axios(options)
       .then((response) => {
         if (response.status === 200) {
-          //console.log(response.data);
           setFiles(response.data);
         }
       })

@@ -30,8 +30,6 @@ const GenerateKeys = (props) => {
     // AES
     if (value === 1) {
       key = forge.random.getBytesSync(32);
-      console.log("key");
-      console.log(key);
       keyBase64 = forge.util.encode64(key);
     } else {
       // 3DES KEY
@@ -42,17 +40,11 @@ const GenerateKeys = (props) => {
     // encrypt with server public key
     let encodedEncrypt;
     try {
-      console.log(".env: ", SERVER_PUBLIC);
-      console.log(".cookie: ", auth().SERVER_PUBLIC_KEY);
       const publicKeyObject = forge.pki.publicKeyFromPem(
         auth().SERVER_PUBLIC_KEY
       );
       const encryptedBuffer = publicKeyObject.encrypt(keyBase64);
-      console.log("encryBuffer");
-      console.log(encryptedBuffer);
       encodedEncrypt = forge.util.encode64(encryptedBuffer);
-      console.log("encodedEnc");
-      console.log(encodedEncrypt);
     } catch {
       message.error("failed to encrypt Symmetric Key");
       return;

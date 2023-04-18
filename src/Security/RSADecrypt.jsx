@@ -54,9 +54,7 @@ const RSADecrypt = (props) => {
     const buffer = btoa(
       String.fromCharCode(...new Uint8Array(props.file.file.data.data))
     );
-    console.log(buffer);
     const encryptedBuffer = forge.util.decode64(buffer);
-    console.log(encryptedBuffer);
     // Parse the public key string into a Forge public key object
     const privateKeyObject = forge.pki.privateKeyFromPem(pemString);
 
@@ -86,6 +84,7 @@ const RSADecrypt = (props) => {
           if (response.status === 200) {
             message.success("File Decrypted by with RSA");
             props.setSelectedCard(null);
+            props.handleCancelDisplay();
           }
         })
         .catch((err) => {
