@@ -28,21 +28,21 @@ const Crypto = (props) => {
       <Radio.Group onChange={onChange} value={value}>
         <Radio value={1}>AES</Radio>
         <Radio value={2}>3DES</Radio>
-        <Radio value={3} /* onChange={() => getPublicKeys()} */>RSA</Radio>
-        <Radio disabled={props.file.encrypted} value={4}>
-          Check Hash
-        </Radio>
+        <Radio value={3}>RSA</Radio>
+        <Radio value={4}>Check Hash</Radio>
       </Radio.Group>
       {value === 1 && (
         <AESEncryption
           file={props.file}
           setSelectedCard={props.setSelectedCard}
+          handleCancelDisplay={props.handleCancelDisplay}
         />
       )}
       {value === 2 && (
         <DESEncryption
           file={props.file}
           setSelectedCard={props.setSelectedCard}
+          handleCancelDisplay={props.handleCancelDisplay}
         />
       )}
       {value === 3 &&
@@ -50,11 +50,13 @@ const Crypto = (props) => {
           <RSADecrypt
             file={props.file}
             setSelectedCard={props.setSelectedCard}
+            handleCancelDisplay={props.handleCancelDisplay}
           />
         ) : (
           <RSAEncrypt
             file={props.file}
             setSelectedCard={props.setSelectedCard}
+            handleCancelDisplay={props.handleCancelDisplay}
           />
         ))}
       {value === 4 && (

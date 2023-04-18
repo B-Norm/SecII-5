@@ -8,7 +8,6 @@ const API_KEY = import.meta.env.VITE_API_KEY;
 
 //layout from antd
 const Login = (props) => {
-  //console.log(props);
   const signIn = useSignIn();
   const nav = useNavigate();
 
@@ -39,6 +38,7 @@ const Login = (props) => {
             authState: {
               username: values.username,
               SERVER_PUBLIC_KEY: response.data.SERVER_PUBLIC_KEY,
+              admin: response.data.admin,
             },
           });
           nav("/");

@@ -8,7 +8,6 @@ import axios from "axios";
 import { useAuthHeader, useAuthUser, useIsAuthenticated } from "react-auth-kit";
 
 const { Dragger } = Upload;
-// TODO: Fix hash compair
 const CheckHash = (props) => {
   const [hash, setHash] = useState([]);
   const [currentFileHash, setCurrentFileHash] = useState([]);
@@ -20,6 +19,7 @@ const CheckHash = (props) => {
   const auth = useAuthUser();
 
   const handleFileUpload = async (file) => {
+    setCurrentFileHash(null);
     const fileReader = new FileReader();
     fileReader.onload = async (e) => {
       // convert to a string array to compare with DB
@@ -27,7 +27,7 @@ const CheckHash = (props) => {
       const arrayBuffer = e.target.result;
       const uint8Array = new Uint8Array(arrayBuffer);
       const array = Array.from(uint8Array);
-      setCheckFile(array.toString());
+      setCheckFile(array);
     };
     fileReader.readAsArrayBuffer(file);
   };
@@ -66,7 +66,13 @@ const CheckHash = (props) => {
     setFileUploaded(false);
     var newHash = forge.md.sha256.create();
     newHash.update(checkFile);
-    console.log(newHash.digest().toHex());
+    const uploadedFileHash = newHash.digest().toHex();
+    setCurrentFileHash(uploadedFileHash);
+    if (uploadedFileHash === hash) {
+      message.success("File is Valid");
+    } else {
+      message.error("File is Invalid");
+    }
   };
 
   const draggerProps = {
@@ -89,6 +95,7 @@ const CheckHash = (props) => {
       <h2> File Hash:</h2>
       <p>{hash}</p>
       <h2> UserFile:</h2>
+      <p>{currentFileHash}</p>
       <>
         <Dragger {...draggerProps}>
           <p className="ant-upload-drag-icon">
@@ -97,8 +104,8 @@ const CheckHash = (props) => {
           <p className="ant-upload-text">Click or drag file to check Hash</p>
           {fileUploaded && <h1 className="ant-upload-hint">File added</h1>}
         </Dragger>
+
         <Button onClick={checkHash}> Submit </Button>
-        <p>{currentFileHash}</p>
       </>
     </div>
   );

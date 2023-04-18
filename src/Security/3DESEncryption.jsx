@@ -95,22 +95,7 @@ const DESEncryption = (props) => {
     props.file.file.data.data.forEach((byte) => {
       byteBuffer.putByte(byte);
     });
-    /* 
-    const iv = forge.random.getBytesSync(8);
-    console.log(symKey);
-    const DESKeyBytes = forge.util.decode64(symKey);
-    console.log("DES BYTES:", DESKeyBytes.length);
-    const cipher = forge.cipher.createCipher("3DES-CBC", DESKeyBytes);
-    cipher.start({ iv: iv });
-    cipher.update(byteBuffer);
-    cipher.finish();
- 
-    const encryptedData = forge.util.encode64(cipher.output.getBytes());
-    const encodedIV = forge.util.encode64(iv);
 
-    console.log(encodedIV);
-    console.log(encryptedData);
-*/
     const data = desEncrypt(byteBuffer, symKey);
 
     const options = {
@@ -132,6 +117,7 @@ const DESEncryption = (props) => {
         if (response.status === 200) {
           message.success("File Encrypted by with 3DES");
           props.setSelectedCard(null);
+          props.handleCancelDisplay();
         }
       })
       .catch((err) => {
@@ -150,16 +136,7 @@ const DESEncryption = (props) => {
     props.file.file.data.data.forEach((byte) => {
       byteBuffer.putByte(byte);
     });
-    /*     const iv = forge.util.decode64(props.file.iv);
-    const DESKeyBytes = forge.util.decode64(symKey);
 
-    const decipher = forge.cipher.createDecipher("3DES-CBC", DESKeyBytes);
-    decipher.start({ iv });
-    decipher.update(forge.util.createBuffer(byteBuffer));
-    decipher.finish();
-
-    const decryptedData = forge.util.encode64(decipher.output.getBytes());
- */
     const decryptedData = desDecrypt(byteBuffer, props.file.iv, symKey);
     // update database with decrypted file
     if (value === 1) {
@@ -181,6 +158,7 @@ const DESEncryption = (props) => {
           if (response.status === 200) {
             message.success("File Decrypted with 3DES");
             props.setSelectedCard(null);
+            props.handleCancelDisplay();
           }
         })
         .catch((err) => {
