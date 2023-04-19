@@ -13,19 +13,27 @@ const Register = (props) => {
 
   // User added create keys
   const success = async (values) => {
-    //setLoading(setLoading(true));
-    const keys = forge.pki.rsa.generateKeyPair(2048);
+    let keys, privateKey, publicKey;
+    try {
+      // create key pair
+      keys = await generateKeyPair();
 
-    const privateKey = forge.pki.privateKeyToPem(keys.privateKey);
-    const publicKey = forge.pki.publicKeyToPem(keys.publicKey);
+      privateKey = forge.pki.privateKeyToPem(keys.privateKey);
+      publicKey = forge.pki.publicKeyToPem(keys.publicKey);
 
-    // Download private key
-    const element = document.createElement("a");
-    const file = new Blob([privateKey], { type: "text/plain" });
-    element.href = URL.createObjectURL(file);
-    element.download = values.username + "_private_key.pem";
-    document.body.appendChild(element);
-    element.click();
+      // Download private key
+      const element = document.createElement("a");
+      const file = new Blob([privateKey], { type: "text/plain" });
+      element.href = URL.createObjectURL(file);
+      element.download = values.username + "_private_key.pem";
+      document.body.appendChild(element);
+      element.click();
+      setLoading(false);
+    } catch (err) {
+      message.error("Failed to Create New Public/ Private Key");
+      console.error(err);
+      setLoading(false);
+    }
 
     //const strPub = JSON.stringify({ publicKey });
 
@@ -42,8 +50,24 @@ const Register = (props) => {
         }
       })
       .catch((err) => {
-        error();
+        message.error("Failed to Create New Public/ Private Key");
+        setLoading(false);
+        console.error(err);
       });
+  };
+
+  // buffer for key pair loader
+  const generateKeyPair = () => {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        try {
+          const keys = forge.pki.rsa.generateKeyPair(2048);
+          resolve(keys);
+        } catch (error) {
+          reject(error);
+        }
+      }, 0);
+    });
   };
 
   // username taken
@@ -73,8 +97,12 @@ const Register = (props) => {
       const res = await axios(options)
         .then((response) => {
           if (response.status === 200) {
-            backToLogin();
-            success(values);
+            setLoading(true);
+
+            success(values).then(() => {
+              setLoading(false);
+              backToLogin();
+            });
           }
         })
         .catch((err) => {
@@ -185,6 +213,7 @@ const Register = (props) => {
             <Button type="default" onClick={backToLogin}>
               Back to Login
             </Button>
+            {loading && <Spin />}
           </Space>
         </Form.Item>
       </Form>
