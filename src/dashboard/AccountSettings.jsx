@@ -1,6 +1,12 @@
+import { useNavigate } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useAuthHeader, useAuthUser, useIsAuthenticated } from "react-auth-kit";
+import {
+  useAuthHeader,
+  useAuthUser,
+  useIsAuthenticated,
+  useSignOut,
+} from "react-auth-kit";
 import { SettingOutlined, UserOutlined } from "@ant-design/icons";
 import {
   Form,
@@ -25,6 +31,8 @@ const AccountSettings = () => {
   const isAuthenticated = useIsAuthenticated();
   const useAuth = useAuthHeader();
   const auth = useAuthUser();
+  const signOut = useSignOut();
+  const nav = useNavigate();
 
   const handleOpenDisplay = () => {
     setDisplay(true);
@@ -109,13 +117,14 @@ const AccountSettings = () => {
         if (res.status === 200) {
           message.success("User Deleted");
           handleCancelDisplay();
-          if (user === auth().username) {
-            nav("/login");
+          if (value === auth().username) {
+            signOut();
           }
         }
       })
       .catch((err) => {
         message.error("Failed to delete user");
+        console.error(err);
       });
   };
 

@@ -3,11 +3,17 @@ import { Card, Button, Row, Col, Modal, Space } from "antd";
 import Crypto from "./Crypto";
 
 const FileDisplay = (filename, file) => {
-  const url =
+  /* const url =
     "data:" +
     file.contentType +
     ";base64," +
-    btoa(String.fromCharCode(...new Uint8Array(file.data.data)));
+    btoa(String.fromCharCode(...new Uint8Array(file.data.data))); */
+  const byteStream = Uint8Array.from(file.data.data);
+
+  const blob = new Blob([byteStream], {
+    type: "application/octet-stream",
+  });
+  const url = URL.createObjectURL(blob);
 
   const fileType = filename.split(".").pop();
 
@@ -45,7 +51,8 @@ const Images = (props) => {
   const handleOpenDisplay = (file) => {
     setSelectedCard(file);
   };
-  const handleCancelDisplay = () => {
+  const handleCancelDisplay = async () => {
+    setTimeout(100);
     props.getFiles();
     setSelectedCard(null);
   };
@@ -58,11 +65,19 @@ const Images = (props) => {
   };
 
   const downloadFile = (file) => {
+    /* 
     const url =
       "data:" +
       file.file.contentType +
       ";base64," +
-      btoa(String.fromCharCode(...new Uint8Array(file.file.data.data)));
+      btoa(String.fromCharCode(...new Uint8Array(file.file.data.data))); */
+    const byteStream = Uint8Array.from(file.file.data.data);
+
+    const blob = new Blob([byteStream], {
+      type: "application/octet-stream",
+    });
+    const url = URL.createObjectURL(blob);
+
     const link = document.createElement("a");
     link.href = url;
     link.download = file.filename;

@@ -30,7 +30,9 @@ export const RouteComponent = () => {
             style={{ position: "absolute", display: "inline", right: "100px" }}
           >
             <h3 style={{ display: "inline" }}>{auth().username}</h3>{" "}
-            <AccountSettings />
+            <BrowserRouter>
+              <AccountSettings />
+            </BrowserRouter>
             <a
               onClick={() => {
                 signOut();
